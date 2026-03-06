@@ -1,0 +1,36 @@
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title mb-0">{{ '::DataUploadTitle' | abpLocalization }}</h5>
+  </div>
+
+  <div class="card-body">
+    <p class="text-muted">{{ '::DataUploadDescription' | abpLocalization }}</p>
+
+    <div class="mb-3">
+      <label class="form-label" for="excel-file-input">{{ '::ExcelFile' | abpLocalization }}</label>
+      <input
+        id="excel-file-input"
+        class="form-control"
+        type="file"
+        accept=".xlsx"
+        (change)="onFileSelected($event)"
+      />
+    </div>
+
+    <button class="btn btn-primary" type="button" [disabled]="!selectedFile || isUploading" (click)="upload()">
+      <span *ngIf="!isUploading">{{ '::Upload' | abpLocalization }}</span>
+      <span *ngIf="isUploading">{{ '::Uploading' | abpLocalization }}</span>
+    </button>
+
+    <div *ngIf="uploadResult" class="alert alert-success mt-3 mb-0">
+      {{ '::UploadCompleted' | abpLocalization }}
+      <strong>{{ uploadResult.totalRows }}</strong>
+      {{ '::RowsInserted' | abpLocalization }}
+      ({{ uploadResult.fileName }})
+    </div>
+
+    <div *ngIf="uploadError" class="alert alert-danger mt-3 mb-0">
+      {{ uploadError }}
+    </div>
+  </div>
+</div>

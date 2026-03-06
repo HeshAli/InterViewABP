@@ -1,0 +1,40 @@
+<div class="card mb-3">
+  <div class="card-header">
+    <h5 class="card-title mb-0">{{ '::MyDashboardTitle' | abpLocalization }}</h5>
+  </div>
+  <div class="card-body" style="height: 340px;">
+    <canvas #chartCanvas></canvas>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title mb-0">{{ '::UploadedRows' | abpLocalization }}</h5>
+  </div>
+
+  <div class="card-body">
+    <div class="d-flex justify-content-end align-items-center mb-3">
+      <label class="me-2 mb-0" for="dashboard-page-size">Rows per page</label>
+      <select
+        id="dashboard-page-size"
+        class="form-select form-select-sm w-auto"
+        [value]="list.maxResultCount"
+        (change)="onPageSizeChange($event)"
+      >
+        <option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">{{ pageSize }}</option>
+      </select>
+    </div>
+
+    <ngx-datatable [rows]="rows.items" [count]="rows.totalCount" [list]="list" default>
+      <ngx-datatable-column [name]="'::ColumnA' | abpLocalization" prop="columnA"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'::ColumnB' | abpLocalization" prop="columnB"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'::ColumnC' | abpLocalization" prop="columnC"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'::NumericValue' | abpLocalization" prop="numericValue"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'::CreationTime' | abpLocalization" prop="creationTime">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.creationTime | date: 'short' }}
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</div>
