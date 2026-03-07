@@ -1,0 +1,23 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+    </Configurations>
+    <Folder Name="/src/">
+        <Project Path="src/Upload.Data.Domain/Upload.Data.Domain.csproj" />
+        <Project Path="src/Upload.Data.Application/Upload.Data.Application.csproj" />
+        <Project Path="src/Upload.Data.EntityFrameworkCore/Upload.Data.EntityFrameworkCore.csproj" />
+        <Project Path="src/Upload.Data.Domain.Shared/Upload.Data.Domain.Shared.csproj" />
+        <Project Path="src/Upload.Data.Application.Contracts/Upload.Data.Application.Contracts.csproj" />
+        <Project Path="src/Upload.Data.HttpApi/Upload.Data.HttpApi.csproj" />
+        <Project Path="src/Upload.Data.HttpApi.Client/Upload.Data.HttpApi.Client.csproj" />
+        <Project Path="src/Upload.Data.DbMigrator/Upload.Data.DbMigrator.csproj" />
+        <Project Path="src/Upload.Data.HttpApi.Host/Upload.Data.HttpApi.Host.csproj" />
+    </Folder>
+    <Folder Name="/test/">
+        <Project Path="test/Upload.Data.Application.Tests/Upload.Data.Application.Tests.csproj" />
+        <Project Path="test/Upload.Data.EntityFrameworkCore.Tests/Upload.Data.EntityFrameworkCore.Tests.csproj" />
+        <Project Path="test/Upload.Data.TestBase/Upload.Data.TestBase.csproj" />
+        <Project Path="test/Upload.Data.Domain.Tests/Upload.Data.Domain.Tests.csproj" />
+        <Project Path="test/Upload.Data.HttpApi.Client.ConsoleTestApp/Upload.Data.HttpApi.Client.ConsoleTestApp.csproj" />
+    </Folder>
+</Solution>

@@ -5,9 +5,9 @@ const baseUrl = 'http://localhost:4200';
 const oAuthConfig = {
   issuer: 'https://localhost:44316/',
   redirectUri: baseUrl,
-  clientId: 'BookStore_App',
+  clientId: 'UploadFile_App',
   responseType: 'code',
-  scope: 'offline_access BookStore',
+  scope: 'offline_access UploadFile',
   requireHttps: true,
 };
 
@@ -15,13 +15,13 @@ export const environment = {
   production: true,
   application: {
     baseUrl,
-    name: 'BookStore',
+    name: 'Upload.Data',
   },
   oAuthConfig,
   apis: {
     default: {
       url: 'https://localhost:44316',
-      rootNamespace: 'Test1.BookStore',
+      rootNamespace: 'Upload.Data',
     },
     AbpAccountPublic: {
       url: oAuthConfig.issuer,
@@ -33,3 +33,5 @@ export const environment = {
     mergeStrategy: 'deepmerge'
   }
 } as Environment;
+
+

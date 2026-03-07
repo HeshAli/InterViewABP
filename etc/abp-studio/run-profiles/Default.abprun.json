@@ -1,9 +1,9 @@
-﻿{
+{
   "applications": {
-    "Test1.BookStore.HttpApi.Host": {
+    "Upload.Data.HttpApi.Host": {
       "type": "dotnet-project",
       "launchUrl": "https://localhost:44316",
-      "path": "../../../src/Test1.BookStore.HttpApi.Host/Test1.BookStore.HttpApi.Host.csproj",
+      "path": "../../../src/Upload.Data.HttpApi.Host/Upload.Data.HttpApi.Host.csproj",
       "kubernetesService": ".*-httpapihost$",
       "healthCheckEndpoint": "/health-status",
       "healthUiEndpoint": "/health-ui",
@@ -11,7 +11,7 @@
         "order": 4
       }
     },
-    "Test1.BookStore.Angular": {
+    "Upload.Data.Angular": {
       "type": "cli",
       "workingDirectory": "../../../angular",
       "startCommand": "./start.ps1",
@@ -23,7 +23,7 @@
     }
   },
   "containers": {
-    "serviceName": "BookStore-Containers",
+    "serviceName": "UploadFile-Containers",
   },
   "tasks":{
     "Initialize Solution":{

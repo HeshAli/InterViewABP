@@ -1,0 +1,109 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXLiteTheme": {
+      "version": "5.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    },
+    "Volo.Abp.Account": {
+      "version": "10.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "10.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    },
+    "Volo.Abp.Identity": {
+      "version": "10.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "10.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "10.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "10.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "10.0.1",
+      "isInstalled": true,
+      "creationTime": "01/04/2026 16:07:56 +00:00"
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "Upload.Data.Application": {
+      "path": "src/Upload.Data.Application/Upload.Data.Application.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.Application.Tests": {
+      "path": "test/Upload.Data.Application.Tests/Upload.Data.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "Upload.Data.Domain.Shared": {
+      "path": "src/Upload.Data.Domain.Shared/Upload.Data.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.Application.Contracts": {
+      "path": "src/Upload.Data.Application.Contracts/Upload.Data.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.HttpApi": {
+      "path": "src/Upload.Data.HttpApi/Upload.Data.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.HttpApi.Client": {
+      "path": "src/Upload.Data.HttpApi.Client/Upload.Data.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.EntityFrameworkCore.Tests": {
+      "path": "test/Upload.Data.EntityFrameworkCore.Tests/Upload.Data.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "Upload.Data.EntityFrameworkCore": {
+      "path": "src/Upload.Data.EntityFrameworkCore/Upload.Data.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.TestBase": {
+      "path": "test/Upload.Data.TestBase/Upload.Data.TestBase.abppkg",
+      "folder": "test"
+    },
+    "Upload.Data.Domain.Tests": {
+      "path": "test/Upload.Data.Domain.Tests/Upload.Data.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "Upload.Data.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/Upload.Data.HttpApi.Client.ConsoleTestApp/Upload.Data.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "Upload.Data.DbMigrator": {
+      "path": "src/Upload.Data.DbMigrator/Upload.Data.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.HttpApi.Host": {
+      "path": "src/Upload.Data.HttpApi.Host/Upload.Data.HttpApi.Host.abppkg",
+      "folder": "src"
+    },
+    "Upload.Data.Domain": {
+      "path": "src/Upload.Data.Domain/Upload.Data.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}

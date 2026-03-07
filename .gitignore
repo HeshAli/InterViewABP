@@ -254,17 +254,17 @@ paket-files/
 # ABP Studio
 **/.abpstudio/
 
-# BookStore
-src/Test1.BookStore.Web/Logs/*
-src/Test1.BookStore.Web.Host/Logs/*
-src/Test1.BookStore.Web.Public/Logs/*
-src/Test1.BookStore.Web.Public.Host/Logs/*
-src/Test1.BookStore.AuthServer/Logs/*
-src/Test1.BookStore.HttpApi.Host/Logs/*
-src/Test1.BookStore.HttpApi.Host/Logs/*
-src/Test1.BookStore.DbMigrator/Logs/*
-src/Test1.BookStore.Blazor.Server/Logs/*
-src/Test1.BookStore.Blazor.Server.Tiered/Logs/*
+# UploadFile
+src/Upload.Data.Web/Logs/*
+src/Upload.Data.Web.Host/Logs/*
+src/Upload.Data.Web.Public/Logs/*
+src/Upload.Data.Web.Public.Host/Logs/*
+src/Upload.Data.AuthServer/Logs/*
+src/Upload.Data.HttpApi.Host/Logs/*
+src/Upload.Data.HttpApi.Host/Logs/*
+src/Upload.Data.DbMigrator/Logs/*
+src/Upload.Data.Blazor.Server/Logs/*
+src/Upload.Data.Blazor.Server.Tiered/Logs/*
 
 # Use abp install-libs to restore.
 **/wwwroot/libs/*

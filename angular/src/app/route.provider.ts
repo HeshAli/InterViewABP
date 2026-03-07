@@ -2,9 +2,9 @@ import { RoutesService, eLayoutType } from '@abp/ng.core';
 import { inject, provideAppInitializer } from '@angular/core';
 
 const policies = {
-  dataUploading: 'BookStore.DataUpload.DataUploading',
-  uploadedData: 'BookStore.DataUpload.UploadedData',
-  dashboard: 'BookStore.Dashboard',
+  dataUploading: 'UploadFile.DataUpload.DataUploading',
+  uploadedData: 'UploadFile.DataUpload.UploadedData',
+  dashboard: 'UploadFile.Dashboard',
 };
 
 export const APP_ROUTE_PROVIDER = [

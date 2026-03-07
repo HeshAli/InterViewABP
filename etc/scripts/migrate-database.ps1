@@ -4,7 +4,7 @@ $jobs = @()
 
 $jobs += Start-Job -Name "DbMigrator" -ScriptBlock {
     $ErrorActionPreference = "Stop"
-    Set-Location (Join-Path $using:scriptRoot "../../src/Test1.BookStore.DbMigrator")
+    Set-Location (Join-Path $using:scriptRoot "../../src/Upload.Data.DbMigrator")
     dotnet run
 
     if ($LASTEXITCODE -ne 0) {

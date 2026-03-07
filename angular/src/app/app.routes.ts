@@ -2,9 +2,9 @@ import { authGuard, permissionGuard } from '@abp/ng.core';
 import { Routes } from '@angular/router';
 
 const policies = {
-  dataUploading: 'BookStore.DataUpload.DataUploading',
-  uploadedData: 'BookStore.DataUpload.UploadedData',
-  dashboard: 'BookStore.Dashboard',
+  dataUploading: 'UploadFile.DataUpload.DataUploading',
+  uploadedData: 'UploadFile.DataUpload.UploadedData',
+  dashboard: 'UploadFile.Dashboard',
 };
 
 export const APP_ROUTES: Routes = [

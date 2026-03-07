@@ -7,8 +7,8 @@
 
 ## 2) Configure database connection
 Update connection strings in:
-- `src/Test1.BookStore.HttpApi.Host/appsettings.json`
-- `src/Test1.BookStore.DbMigrator/appsettings.json`
+- `src/Upload.Data.HttpApi.Host/appsettings.json`
+- `src/Upload.Data.DbMigrator/appsettings.json`
 
 Use the same `Default` connection string in both files.
 
@@ -16,14 +16,14 @@ Use the same `Default` connection string in both files.
 From project root:
 
 ```powershell
-dotnet run --project src/Test1.BookStore.DbMigrator/Test1.BookStore.DbMigrator.csproj
+dotnet run --project src/Upload.Data.DbMigrator/Upload.Data.DbMigrator.csproj
 ```
 
 ## 4) Run backend (API + auth server)
 From project root:
 
 ```powershell
-dotnet run --project src/Test1.BookStore.HttpApi.Host/Test1.BookStore.HttpApi.Host.csproj
+dotnet run --project src/Upload.Data.HttpApi.Host/Upload.Data.HttpApi.Host.csproj
 ```
 
 Default URL is shown in console (commonly `https://localhost:44395`).
