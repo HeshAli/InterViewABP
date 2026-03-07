@@ -78,6 +78,10 @@
     "EmptyValue": "(empty)",
     "UploadFailed": "Upload failed.",
     "Menu:EmployeeUploadedData": "Employee Uploaded Data",
-    "EmployeeUploadedDataTitle": "Employee Uploaded Data"
+    "EmployeeUploadedDataTitle": "Employee Uploaded Data",
+    "Permission:DataUpload": "Data Upload",
+    "Permission:DataUpload.DataUploading": "Data Uploading",
+    "Permission:DataUpload.UploadedData": "Uploaded Data",
+    "Permission:Dashboard": "Dashboard"
   }
 }

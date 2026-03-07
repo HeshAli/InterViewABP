@@ -1,6 +1,12 @@
 import { RoutesService, eLayoutType } from '@abp/ng.core';
 import { inject, provideAppInitializer } from '@angular/core';
 
+const policies = {
+  dataUploading: 'BookStore.DataUpload.DataUploading',
+  uploadedData: 'BookStore.DataUpload.UploadedData',
+  dashboard: 'BookStore.Dashboard',
+};
+
 export const APP_ROUTE_PROVIDER = [
   provideAppInitializer(() => {
     configureRoutes();
@@ -28,6 +34,7 @@ function configureRoutes() {
       path: '/data-upload',
       name: '::Menu:DataUpload',
       parentName: '::Menu:DataUploadSection',
+      requiredPolicy: policies.dataUploading,
       layout: eLayoutType.application,
       order: 1,
     },
@@ -35,6 +42,7 @@ function configureRoutes() {
       path: '/data-upload/transferred-rows',
       name: '::Menu:TransferredRows',
       parentName: '::Menu:DataUploadSection',
+      requiredPolicy: policies.dashboard,
       layout: eLayoutType.application,
       order: 2,
     },
@@ -42,6 +50,7 @@ function configureRoutes() {
       path: '/data-upload/employee-uploaded-data',
       name: '::Menu:EmployeeUploadedData',
       parentName: '::Menu:DataUploadSection',
+      requiredPolicy: policies.uploadedData,
       layout: eLayoutType.application,
       order: 3,
     },

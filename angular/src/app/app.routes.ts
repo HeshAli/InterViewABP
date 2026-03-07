@@ -1,5 +1,11 @@
-import { authGuard } from '@abp/ng.core';
+import { authGuard, permissionGuard } from '@abp/ng.core';
 import { Routes } from '@angular/router';
+
+const policies = {
+  dataUploading: 'BookStore.DataUpload.DataUploading',
+  uploadedData: 'BookStore.DataUpload.UploadedData',
+  dashboard: 'BookStore.Dashboard',
+};
 
 export const APP_ROUTES: Routes = [
   {
@@ -26,18 +32,21 @@ export const APP_ROUTES: Routes = [
   {
     path: 'data-upload',
     loadComponent: () => import('./data-upload/data-upload.component').then(c => c.DataUploadComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: { requiredPolicy: policies.dataUploading },
   },
   {
     path: 'data-upload/transferred-rows',
     loadComponent: () => import('./my-dashboard/my-dashboard.component').then(c => c.MyDashboardComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: { requiredPolicy: policies.dashboard },
   },
   {
     path: 'data-upload/employee-uploaded-data',
     loadComponent: () =>
       import('./employee-uploaded-data/employee-uploaded-data.component').then(c => c.EmployeeUploadedDataComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: { requiredPolicy: policies.uploadedData },
   },
   {
     path: 'my-dashboard',

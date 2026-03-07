@@ -9,7 +9,7 @@
     "Welcome": "مرحبا",
     "LongWelcomeMessage": "مرحبا بكم في التطبيق. هذا مشروع بدء التشغيل يعتمد على إطار عمل برنامج ABP. لمزيد من المعلومات قم بزيارة",
     "Date": "تاريخ",
-    "Permission:Dashboard": "لوحة القيادة",
+    "Permission:Dashboard": "لوحة التحكم",
     "Menu:Dashboard": "لوحة القيادة",
     "Menu:HomePage": "الصفحة الرئيسية",
     "Dashboard": "لوحة القيادة",
@@ -77,6 +77,10 @@
     "EmptyValue": "(فارغ)",
     "UploadFailed": "فشل الرفع.",
     "Menu:EmployeeUploadedData": "بيانات الموظف المرفوعة",
-    "EmployeeUploadedDataTitle": "بيانات الموظف المرفوعة"
+    "EmployeeUploadedDataTitle": "بيانات الموظف المرفوعة",
+    "Permission:BookStore": "متجر الكتب",
+    "Permission:DataUpload": "رفع البيانات",
+    "Permission:DataUpload.DataUploading": "رفع البيانات",
+    "Permission:DataUpload.UploadedData": "البيانات المرفوعة"
   }
 }

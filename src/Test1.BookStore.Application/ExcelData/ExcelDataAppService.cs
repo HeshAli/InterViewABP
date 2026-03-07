@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
+using Test1.BookStore.Permissions;
 using Test1.BookStore.Settings;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -38,6 +39,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         _settingProvider = settingProvider;
     }
 
+    [Authorize(BookStorePermissions.DataUpload.DataUploading)]
     public async Task<ExcelUploadResultDto> UploadAsync(IRemoteStreamContent file, CancellationToken cancellationToken = default)
     {
         if (file == null)
@@ -125,6 +127,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         };
     }
 
+    [Authorize(BookStorePermissions.DataUpload.UploadedData)]
     public async Task<PagedResultDto<ExcelDataRowDto>> GetMyRowsAsync(GetMyRowsInputDto input, CancellationToken cancellationToken = default)
     {
         input ??= new GetMyRowsInputDto();
@@ -166,6 +169,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         return new PagedResultDto<ExcelDataRowDto>(totalCount, items);
     }
 
+    [Authorize(BookStorePermissions.Dashboard.Default)]
     public async Task<List<ExcelChartItemDto>> GetMyChartAsync(CancellationToken cancellationToken = default)
     {
         var userId = CurrentUser.Id ?? throw new AbpAuthorizationException("User is not authenticated.");
@@ -554,5 +558,6 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
 
     private sealed record ParsedExcelRow(string ColumnA, string ColumnB, string ColumnC, decimal NumericValue);
 }
+
 
 
