@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { LocalizationPipe } from '@abp/ng.core';
+import { LocalizationPipe, LocalizationService } from '@abp/ng.core';
 import { ExcelDataService } from '../excel-data/excel-data.service';
 import { ExcelUploadResultDto } from '../excel-data/excel-data.models';
 
@@ -16,7 +16,10 @@ export class DataUploadComponent {
   uploadError = '';
   isUploading = false;
 
-  constructor(private readonly excelDataService: ExcelDataService) {}
+  constructor(
+    private readonly excelDataService: ExcelDataService,
+    private readonly localizationService: LocalizationService,
+  ) {}
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -44,7 +47,7 @@ export class DataUploadComponent {
           error?.error?.error?.message ||
           error?.error?.message ||
           error?.message ||
-          'Upload failed.';
+          this.localizationService.instant('::UploadFailed');
         this.isUploading = false;
       },
     });

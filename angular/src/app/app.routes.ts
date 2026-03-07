@@ -29,9 +29,19 @@ export const APP_ROUTES: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'my-dashboard',
+    path: 'data-upload/transferred-rows',
     loadComponent: () => import('./my-dashboard/my-dashboard.component').then(c => c.MyDashboardComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'data-upload/employee-uploaded-data',
+    loadComponent: () =>
+      import('./employee-uploaded-data/employee-uploaded-data.component').then(c => c.EmployeeUploadedDataComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'my-dashboard',
+    redirectTo: 'data-upload/transferred-rows',
+    pathMatch: 'full',
+  },
 ];
-

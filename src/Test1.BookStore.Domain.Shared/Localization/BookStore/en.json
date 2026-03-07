@@ -68,9 +68,16 @@
     "DisplayName:BookStore.ExcelData.MaxAllowedSharedStrings": "Excel max shared strings",
     "Description:BookStore.ExcelData.MaxAllowedSharedStrings": "Maximum number of shared strings allowed while parsing Excel.",
     "DisplayName:BookStore.ExcelData.MaxChartItems": "Dashboard max chart items",
-    "Description:BookStore.ExcelData.MaxChartItems": "Maximum number of grouped items returned for dashboard chart."
+    "Description:BookStore.ExcelData.MaxChartItems": "Maximum number of grouped items returned for dashboard chart.",
+    "Menu:DataUploadSection": "Data Upload",
+    "Menu:TransferredRows": "Transferred Rows",
+    "TransferredRowsTitle": "Transferred Rows",
+    "TransferredRowsChartTitle": "Transferred Rows Chart",
+    "RowsPerPage": "Rows per page",
+    "Chart:TotalNumericValueByColumnA": "Total numeric value by Column A",
+    "EmptyValue": "(empty)",
+    "UploadFailed": "Upload failed.",
+    "Menu:EmployeeUploadedData": "Employee Uploaded Data",
+    "EmployeeUploadedDataTitle": "Employee Uploaded Data"
   }
 }
-
-
-

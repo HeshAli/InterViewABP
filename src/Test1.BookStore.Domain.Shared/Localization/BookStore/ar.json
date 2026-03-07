@@ -54,10 +54,29 @@
     "DisplayName:BookStore.ExcelData.MaxAllowedSharedStrings": "الحد الأقصى للنصوص المشتركة في Excel",
     "Description:BookStore.ExcelData.MaxAllowedSharedStrings": "أقصى عدد نصوص مشتركة مسموح به أثناء تحليل ملف Excel.",
     "DisplayName:BookStore.ExcelData.MaxChartItems": "الحد الأقصى لعناصر مخطط لوحة التحكم",
-    "Description:BookStore.ExcelData.MaxChartItems": "أقصى عدد عناصر مجمعة يتم إرجاعها لمخطط لوحة التحكم."
+    "Description:BookStore.ExcelData.MaxChartItems": "أقصى عدد عناصر مجمعة يتم إرجاعها لمخطط لوحة التحكم.",
+    "Menu:DataUploadSection": "رفع البيانات",
+    "Menu:DataUpload": "رفع البيانات",
+    "Menu:TransferredRows": "البيانات المنقولة",
+    "DataUploadTitle": "رفع البيانات",
+    "DataUploadDescription": "ارفع ملف .xlsx يحتوي على صف عنوان وبيانات في الأعمدة A وB وC والقيمة الرقمية.",
+    "ExcelFile": "ملف إكسل",
+    "Upload": "رفع",
+    "Uploading": "جارٍ الرفع...",
+    "UploadCompleted": "اكتمل الرفع:",
+    "RowsInserted": "صف تمت إضافته",
+    "ColumnA": "العمود A",
+    "ColumnB": "العمود B",
+    "ColumnC": "العمود C",
+    "NumericValue": "القيمة الرقمية",
+    "CreationTime": "وقت الإنشاء",
+    "TransferredRowsTitle": "البيانات المنقولة",
+    "TransferredRowsChartTitle": "مخطط البيانات المنقولة",
+    "RowsPerPage": "عدد الصفوف لكل صفحة",
+    "Chart:TotalNumericValueByColumnA": "إجمالي القيمة الرقمية حسب العمود A",
+    "EmptyValue": "(فارغ)",
+    "UploadFailed": "فشل الرفع.",
+    "Menu:EmployeeUploadedData": "بيانات الموظف المرفوعة",
+    "EmployeeUploadedDataTitle": "بيانات الموظف المرفوعة"
   }
 }
-
-
-
-
