@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
-using Test1.BookStore.Books;
 using Test1.BookStore.ExcelData;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
@@ -28,8 +27,6 @@ public class BookStoreDbContext :
     IIdentityDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-
-    public DbSet<Book> Books { get; set; }
 
     public DbSet<ExcelImportBatch> ExcelImportBatches { get; set; }
 
@@ -86,14 +83,6 @@ public class BookStoreDbContext :
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
 
-        builder.Entity<Book>(b =>
-        {
-            b.ToTable(BookStoreConsts.DbTablePrefix + "Books",
-                BookStoreConsts.DbSchema);
-            b.ConfigureByConvention(); //auto configure for the base class props
-            b.Property(x => x.Name).IsRequired().HasMaxLength(128);
-        });
-
         builder.Entity<ExcelImportBatch>(b =>
         {
             b.ToTable(BookStoreConsts.DbTablePrefix + "ExcelImportBatches", BookStoreConsts.DbSchema);
@@ -135,3 +124,4 @@ public class BookStoreDbContext :
         //});
     }
 }
+

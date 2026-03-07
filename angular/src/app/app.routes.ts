@@ -1,4 +1,4 @@
-import { authGuard, permissionGuard } from '@abp/ng.core';
+import { authGuard } from '@abp/ng.core';
 import { Routes } from '@angular/router';
 
 export const APP_ROUTES: Routes = [
@@ -24,11 +24,6 @@ export const APP_ROUTES: Routes = [
     loadChildren: () => import('@abp/ng.setting-management').then(c => c.createRoutes()),
   },
   {
-    path: 'books',
-    loadComponent: () => import('./book/book.component').then(c => c.BookComponent),
-    canActivate: [authGuard, permissionGuard],
-  },
-  {
     path: 'data-upload',
     loadComponent: () => import('./data-upload/data-upload.component').then(c => c.DataUploadComponent),
     canActivate: [authGuard],
@@ -39,3 +34,4 @@ export const APP_ROUTES: Routes = [
     canActivate: [authGuard],
   },
 ];
+

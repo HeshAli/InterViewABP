@@ -1,20 +1,22 @@
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using Test1.BookStore.Settings;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Authorization;
 using Volo.Abp.Content;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Settings;
 using Volo.Abp.Users;
 
 namespace Test1.BookStore.ExcelData;
@@ -22,21 +24,18 @@ namespace Test1.BookStore.ExcelData;
 [Authorize]
 public class ExcelDataAppService : ApplicationService, IExcelDataAppService
 {
-    // tune these as you like
-    private const long MaxUploadBytes = 10 * 1024 * 1024;          // 10 MB
-    private const int MaxAllowedRows = 20_000;                     // safety cap
-    private const int MaxAllowedSharedStrings = 200_000;           // safety cap
-    private const int MaxChartItems = 10;
-
     private readonly IRepository<ExcelImportBatch, Guid> _batchRepository;
     private readonly IRepository<ExcelDataRow, Guid> _rowRepository;
+    private readonly ISettingProvider _settingProvider;
 
     public ExcelDataAppService(
         IRepository<ExcelImportBatch, Guid> batchRepository,
-        IRepository<ExcelDataRow, Guid> rowRepository)
+        IRepository<ExcelDataRow, Guid> rowRepository,
+        ISettingProvider settingProvider)
     {
         _batchRepository = batchRepository;
         _rowRepository = rowRepository;
+        _settingProvider = settingProvider;
     }
 
     public async Task<ExcelUploadResultDto> UploadAsync(IRemoteStreamContent file, CancellationToken cancellationToken = default)
@@ -48,14 +47,20 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         if (string.IsNullOrWhiteSpace(fileName) || !fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
             throw new UserFriendlyException(L["ExcelUpload:OnlyXlsxAllowed"]);
 
-        // If ContentLength is available, enforce a hard limit (best defense)
-        if (file.ContentLength.HasValue && file.ContentLength.Value > MaxUploadBytes)
+        var limits = await GetExcelLimitsAsync();
+
+        if (file.ContentLength.HasValue && file.ContentLength.Value > limits.MaxUploadBytes)
             throw new UserFriendlyException(L["ExcelUpload:FileTooLarge"]);
 
         await using var inputStream = file.GetStream();
 
-        // Ensure we have a seekable stream for ZipArchive; copy if needed.
-        await using var excelStream = await EnsureSeekableAsync(inputStream, file.ContentLength, cancellationToken);
+        // Ensure we have a seekable stream for OpenXml processing.
+        await using var excelStream = await EnsureSeekableAsync(
+            inputStream,
+            file.ContentLength,
+            limits.MaxUploadBytes,
+            cancellationToken
+        );
 
         if (excelStream.Length == 0)
             throw new UserFriendlyException(L["ExcelUpload:FileIsEmpty"]);
@@ -67,8 +72,8 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         {
             parsedRows = ParseExcelRows(
                 excelStream,
-                maxRows: MaxAllowedRows,
-                maxSharedStrings: MaxAllowedSharedStrings
+                maxRows: limits.MaxAllowedRows,
+                maxSharedStrings: limits.MaxAllowedSharedStrings
             );
         }
         catch (UserFriendlyException)
@@ -77,7 +82,6 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         }
         catch
         {
-            // keep the message user-friendly; you can localize it
             throw new UserFriendlyException(L["ExcelUpload:InvalidExcelFile"]);
         }
 
@@ -96,7 +100,6 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
 
         await _batchRepository.InsertAsync(batch, autoSave: false, cancellationToken: cancellationToken);
 
-        // Build entities and bulk insert (massive perf improvement)
         var entities = parsedRows.Select(r => new ExcelDataRow(
                 GuidGenerator.Create(),
                 batch.Id,
@@ -112,8 +115,6 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
 
         batch.SetTotalRows(entities.Count);
         await _batchRepository.UpdateAsync(batch, autoSave: false, cancellationToken: cancellationToken);
-
-        // No need to call SaveChanges manually; ABP UoW will commit.
 
         return new ExcelUploadResultDto
         {
@@ -170,8 +171,8 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         var userId = CurrentUser.Id ?? throw new AbpAuthorizationException("User is not authenticated.");
 
         var queryable = await _rowRepository.GetQueryableAsync();
+        var limits = await GetExcelLimitsAsync();
 
-        // Do Order/Take in query (scales better)
         var result = await AsyncExecuter.ToListAsync(
             queryable
                 .Where(x => x.UploadedByUserId == userId)
@@ -183,7 +184,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
                 })
                 .OrderByDescending(x => x.Value)
                 .ThenBy(x => x.Label)
-                .Take(MaxChartItems)
+                .Take(limits.MaxChartItems)
         );
 
         return result;
@@ -238,111 +239,171 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         }
     }
 
-    private static async Task<MemoryStream> EnsureSeekableAsync(
+    private async Task<ExcelRuntimeLimits> GetExcelLimitsAsync()
+    {
+        var maxUploadBytes = await GetPositiveLongSettingAsync(
+            BookStoreSettings.ExcelData.MaxUploadBytes,
+            BookStoreSettings.ExcelData.DefaultMaxUploadBytes
+        );
+
+        var maxAllowedRows = await GetPositiveIntSettingAsync(
+            BookStoreSettings.ExcelData.MaxAllowedRows,
+            BookStoreSettings.ExcelData.DefaultMaxAllowedRows
+        );
+
+        var maxAllowedSharedStrings = await GetPositiveIntSettingAsync(
+            BookStoreSettings.ExcelData.MaxAllowedSharedStrings,
+            BookStoreSettings.ExcelData.DefaultMaxAllowedSharedStrings
+        );
+
+        var maxChartItems = await GetPositiveIntSettingAsync(
+            BookStoreSettings.ExcelData.MaxChartItems,
+            BookStoreSettings.ExcelData.DefaultMaxChartItems
+        );
+
+        return new ExcelRuntimeLimits(
+            maxUploadBytes,
+            maxAllowedRows,
+            maxAllowedSharedStrings,
+            maxChartItems
+        );
+    }
+
+    private async Task<long> GetPositiveLongSettingAsync(string settingName, long defaultValue)
+    {
+        var rawValue = await _settingProvider.GetOrNullAsync(settingName);
+
+        return long.TryParse(rawValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedValue)
+               && parsedValue > 0
+            ? parsedValue
+            : defaultValue;
+    }
+
+    private async Task<int> GetPositiveIntSettingAsync(string settingName, int defaultValue)
+    {
+        var rawValue = await _settingProvider.GetOrNullAsync(settingName);
+
+        return int.TryParse(rawValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedValue)
+               && parsedValue > 0
+            ? parsedValue
+            : defaultValue;
+    }
+
+    private async Task<MemoryStream> EnsureSeekableAsync(
         Stream inputStream,
         long? declaredLength,
+        long maxUploadBytes,
         CancellationToken cancellationToken)
     {
-        // If already seekable, just copy to memory only if you want to enforce MaxUploadBytes via actual stream length.
-        // Here we always copy but enforce a hard cap while copying.
-        var ms = new MemoryStream(capacity: declaredLength.HasValue && declaredLength.Value > 0 && declaredLength.Value <= int.MaxValue
-            ? (int)declaredLength.Value
-            : 0);
+        var memoryStream = new MemoryStream(
+            capacity: declaredLength.HasValue
+                      && declaredLength.Value > 0
+                      && declaredLength.Value <= int.MaxValue
+                ? (int)declaredLength.Value
+                : 0
+        );
 
         var buffer = new byte[81920];
-        long total = 0;
+        long totalRead = 0;
 
         while (true)
         {
             var read = await inputStream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
-            if (read <= 0) break;
+            if (read <= 0)
+            {
+                break;
+            }
 
-            total += read;
-            if (total > MaxUploadBytes)
-                throw new UserFriendlyException("File is too large."); // replace with L["ExcelUpload:FileTooLarge"]
+            totalRead += read;
+            if (totalRead > maxUploadBytes)
+            {
+                throw new UserFriendlyException(L["ExcelUpload:FileTooLarge"]);
+            }
 
-            await ms.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+            await memoryStream.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
         }
 
-        ms.Position = 0;
-        return ms;
+        memoryStream.Position = 0;
+        return memoryStream;
     }
 
-    private static List<ParsedExcelRow> ParseExcelRows(Stream fileStream, int maxRows, int maxSharedStrings)
+    private List<ParsedExcelRow> ParseExcelRows(Stream fileStream, int maxRows, int maxSharedStrings)
     {
-        using var archive = new ZipArchive(fileStream, ZipArchiveMode.Read, leaveOpen: true);
+        using var spreadsheetDocument = SpreadsheetDocument.Open(fileStream, false);
 
-        var workbookEntry = archive.GetEntry("xl/workbook.xml")
-            ?? throw new UserFriendlyException("Workbook structure is invalid.");
+        var workbookPart = spreadsheetDocument.WorkbookPart
+            ?? throw new UserFriendlyException(L["ExcelUpload:WorkbookStructureInvalid"]);
 
-        var workbookRelationshipsEntry = archive.GetEntry("xl/_rels/workbook.xml.rels")
-            ?? throw new UserFriendlyException("Workbook relationships are missing.");
+        if (workbookPart.Workbook == null)
+        {
+            throw new UserFriendlyException(L["ExcelUpload:WorkbookStructureInvalid"]);
+        }
 
-        var workbookDocument = XDocument.Load(workbookEntry.Open());
-        var workbookNamespace = workbookDocument.Root?.Name.Namespace ?? XNamespace.None;
-        var relationshipNamespace = XNamespace.Get("http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-
-        var workbookRelationshipsDocument = XDocument.Load(workbookRelationshipsEntry.Open());
-        var workbookRelationshipsNamespace = workbookRelationshipsDocument.Root?.Name.Namespace ?? XNamespace.None;
-
-        var sheetPathByRelationshipId = workbookRelationshipsDocument
-            .Descendants(workbookRelationshipsNamespace + "Relationship")
-            .Where(r =>
-                string.Equals((string?)r.Attribute("Type"),
-                    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
-                    StringComparison.OrdinalIgnoreCase))
-            .Select(r => new
-            {
-                Id = (string?)r.Attribute("Id"),
-                Target = (string?)r.Attribute("Target")
-            })
-            .Where(x => !string.IsNullOrWhiteSpace(x.Id) && !string.IsNullOrWhiteSpace(x.Target))
-            .ToDictionary(x => x.Id!, x => NormalizeWorksheetPath(x.Target!));
-
-        var firstSheetRelId = workbookDocument
-            .Descendants(workbookNamespace + "sheet")
-            .Select(sheet => (string?)sheet.Attribute(relationshipNamespace + "id"))
-            .FirstOrDefault();
-
-        if (firstSheetRelId.IsNullOrWhiteSpace())
+        var firstSheet = workbookPart.Workbook.Sheets?.Elements<Sheet>().FirstOrDefault();
+        if (firstSheet == null)
+        {
             return new List<ParsedExcelRow>();
+        }
 
-        if (!sheetPathByRelationshipId.TryGetValue(firstSheetRelId!, out var worksheetPath))
+        var relationshipId = firstSheet.Id?.Value;
+        if (relationshipId.IsNullOrWhiteSpace())
+        {
+            throw new UserFriendlyException(L["ExcelUpload:WorkbookRelationshipsMissing"]);
+        }
+
+        WorksheetPart? worksheetPart;
+        try
+        {
+            worksheetPart = workbookPart.GetPartById(relationshipId) as WorksheetPart;
+        }
+        catch
+        {
+            throw new UserFriendlyException(L["ExcelUpload:WorkbookRelationshipsMissing"]);
+        }
+
+        if (worksheetPart?.Worksheet == null)
+        {
             return new List<ParsedExcelRow>();
+        }
 
-        var worksheetEntry = archive.GetEntry(worksheetPath);
-        if (worksheetEntry == null)
-            return new List<ParsedExcelRow>();
-
-        var sharedStrings = LoadSharedStrings(archive, maxSharedStrings);
-        return ParseWorksheet(worksheetEntry, sharedStrings, maxRows);
+        var sharedStrings = LoadSharedStrings(workbookPart, maxSharedStrings);
+        return ParseWorksheet(worksheetPart, sharedStrings, maxRows);
     }
 
     private static List<ParsedExcelRow> ParseWorksheet(
-        ZipArchiveEntry worksheetEntry,
+        WorksheetPart worksheetPart,
         IReadOnlyList<string> sharedStrings,
         int maxRows)
     {
-        var worksheetDocument = XDocument.Load(worksheetEntry.Open());
-        var worksheetNamespace = worksheetDocument.Root?.Name.Namespace ?? XNamespace.None;
+        var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+        if (sheetData == null)
+        {
+            return new List<ParsedExcelRow>();
+        }
 
         var parsedRows = new List<ParsedExcelRow>();
         var skippedHeader = false;
 
-        foreach (var rowElement in worksheetDocument.Descendants(worksheetNamespace + "row"))
+        foreach (var row in sheetData.Elements<Row>())
         {
             var cellsByColumn = new SortedDictionary<int, string>();
 
-            foreach (var cellElement in rowElement.Elements(worksheetNamespace + "c"))
+            foreach (var cell in row.Elements<Cell>())
             {
-                var columnIndex = GetColumnIndex((string?)cellElement.Attribute("r") ?? string.Empty);
-                if (columnIndex < 0) continue;
+                var columnIndex = GetColumnIndex(cell.CellReference?.Value ?? string.Empty);
+                if (columnIndex < 0)
+                {
+                    continue;
+                }
 
-                var value = ReadCellValue(cellElement, worksheetNamespace, sharedStrings).Trim();
+                var value = ReadCellValue(cell, sharedStrings).Trim();
                 cellsByColumn[columnIndex] = value;
             }
 
-            if (cellsByColumn.Count == 0) continue;
+            if (cellsByColumn.Count == 0)
+            {
+                continue;
+            }
 
             if (!skippedHeader)
             {
@@ -366,24 +427,35 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
             parsedRows.Add(new ParsedExcelRow(columnA, columnB, columnC, numericValue));
 
             if (parsedRows.Count >= maxRows)
+            {
                 break;
+            }
         }
 
         return parsedRows;
     }
 
     private static string GetValueByColumn(IReadOnlyDictionary<int, string> cellsByColumn, int columnIndex)
-        => cellsByColumn.TryGetValue(columnIndex, out var value) ? value?.Trim() ?? string.Empty : string.Empty;
+        => cellsByColumn.TryGetValue(columnIndex, out var value)
+            ? value?.Trim() ?? string.Empty
+            : string.Empty;
 
     private static decimal ParseDecimal(string rawValue)
     {
-        if (string.IsNullOrWhiteSpace(rawValue)) return 0;
+        if (string.IsNullOrWhiteSpace(rawValue))
+        {
+            return 0;
+        }
 
         if (decimal.TryParse(rawValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var invariantValue))
+        {
             return invariantValue;
+        }
 
         if (decimal.TryParse(rawValue, NumberStyles.Any, CultureInfo.CurrentCulture, out var currentCultureValue))
+        {
             return currentCultureValue;
+        }
 
         return 0;
     }
@@ -391,73 +463,96 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
     private static int GetColumnIndex(string cellReference)
     {
         var letters = new string(cellReference.TakeWhile(char.IsLetter).ToArray());
-        if (string.IsNullOrWhiteSpace(letters)) return -1;
+        if (string.IsNullOrWhiteSpace(letters))
+        {
+            return -1;
+        }
 
         var index = 0;
         foreach (var letter in letters)
+        {
             index = (index * 26) + (char.ToUpperInvariant(letter) - 'A' + 1);
+        }
 
         return index - 1;
     }
 
-    private static IReadOnlyList<string> LoadSharedStrings(ZipArchive archive, int maxSharedStrings)
+    private IReadOnlyList<string> LoadSharedStrings(WorkbookPart workbookPart, int maxSharedStrings)
     {
-        var sharedStringsEntry = archive.GetEntry("xl/sharedStrings.xml");
-        if (sharedStringsEntry == null) return Array.Empty<string>();
+        var sharedStringTable = workbookPart.SharedStringTablePart?.SharedStringTable;
+        if (sharedStringTable == null)
+        {
+            return Array.Empty<string>();
+        }
 
-        var document = XDocument.Load(sharedStringsEntry.Open());
-        var ns = document.Root?.Name.Namespace ?? XNamespace.None;
-
-        var list = document
-            .Descendants(ns + "si")
-            .Select(si => string.Concat(si.Descendants(ns + "t").Select(t => t.Value)))
+        var values = sharedStringTable
+            .Elements<SharedStringItem>()
+            .Select(ReadSharedStringItem)
             .ToList();
 
-        if (list.Count > maxSharedStrings)
-            throw new UserFriendlyException("Excel file is too large (shared strings).");
+        if (values.Count > maxSharedStrings)
+        {
+            throw new UserFriendlyException(L["ExcelUpload:SharedStringsTooLarge"]);
+        }
 
-        return list;
+        return values;
     }
 
-    private static string ReadCellValue(XElement cellElement, XNamespace ns, IReadOnlyList<string> sharedStrings)
+    private static string ReadSharedStringItem(SharedStringItem item)
     {
-        var type = (string?)cellElement.Attribute("t") ?? string.Empty;
-
-        if (string.Equals(type, "s", StringComparison.OrdinalIgnoreCase))
+        if (item.Text != null)
         {
-            var idxText = cellElement.Element(ns + "v")?.Value;
-            if (int.TryParse(idxText, out var idx) && idx >= 0 && idx < sharedStrings.Count)
-                return sharedStrings[idx];
+            return item.Text.Text ?? string.Empty;
+        }
+
+        return item.InnerText ?? string.Empty;
+    }
+
+    private static string ReadCellValue(Cell cell, IReadOnlyList<string> sharedStrings)
+    {
+        var rawValue = cell.CellValue?.Text ?? cell.InnerText ?? string.Empty;
+        var cellType = cell.DataType?.Value;
+
+        if (cellType == null)
+        {
+            return rawValue;
+        }
+
+        if (cellType.Value == CellValues.SharedString)
+        {
+            if (int.TryParse(rawValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var sharedStringIndex)
+                && sharedStringIndex >= 0
+                && sharedStringIndex < sharedStrings.Count)
+            {
+                return sharedStrings[sharedStringIndex];
+            }
 
             return string.Empty;
         }
 
-        if (string.Equals(type, "inlineStr", StringComparison.OrdinalIgnoreCase))
-            return string.Concat(cellElement.Descendants(ns + "t").Select(t => t.Value));
+        if (cellType.Value == CellValues.InlineString)
+        {
+            return cell.InlineString?.Text?.Text
+                   ?? cell.InlineString?.InnerText
+                   ?? rawValue;
+        }
 
-        if (string.Equals(type, "b", StringComparison.OrdinalIgnoreCase))
-            return cellElement.Element(ns + "v")?.Value == "1" ? "TRUE" : "FALSE";
+        if (cellType.Value == CellValues.Boolean)
+        {
+            return rawValue == "1" ? "TRUE" : "FALSE";
+        }
 
-        return cellElement.Element(ns + "v")?.Value ?? string.Empty;
+        return rawValue;
     }
 
-    private static string NormalizeWorksheetPath(string target)
-    {
-        var t = (target ?? string.Empty).Replace('\\', '/').Trim();
-
-        // remove leading slashes
-        t = t.TrimStart('/');
-
-        // remove leading ../ segments (common relative path pattern)
-        while (t.StartsWith("../", StringComparison.OrdinalIgnoreCase))
-            t = t.Substring(3);
-
-        // if already includes xl/, keep it
-        if (!t.StartsWith("xl/", StringComparison.OrdinalIgnoreCase))
-            t = $"xl/{t}";
-
-        return t;
-    }
+    private sealed record ExcelRuntimeLimits(
+        long MaxUploadBytes,
+        int MaxAllowedRows,
+        int MaxAllowedSharedStrings,
+        int MaxChartItems
+    );
 
     private sealed record ParsedExcelRow(string ColumnA, string ColumnB, string ColumnC, decimal NumericValue);
 }
+
+

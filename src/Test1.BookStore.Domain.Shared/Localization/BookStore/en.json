@@ -55,6 +55,22 @@
     "ColumnA": "Column A",
     "ColumnB": "Column B",
     "ColumnC": "Column C",
-    "NumericValue": "Numeric value"
+    "NumericValue": "Numeric value",
+    "ExcelUpload:FileTooLarge": "The uploaded file is too large. Maximum allowed size is 10 MB.",
+    "ExcelUpload:InvalidExcelFile": "The uploaded file is not a valid Excel (.xlsx) file.",
+    "ExcelUpload:WorkbookStructureInvalid": "The workbook structure is invalid.",
+    "ExcelUpload:WorkbookRelationshipsMissing": "The workbook relationships are missing.",
+    "ExcelUpload:SharedStringsTooLarge": "The Excel file is too large to process.",
+    "DisplayName:BookStore.ExcelData.MaxUploadBytes": "Excel upload max file size (bytes)",
+    "Description:BookStore.ExcelData.MaxUploadBytes": "Maximum allowed Excel upload size in bytes.",
+    "DisplayName:BookStore.ExcelData.MaxAllowedRows": "Excel max rows",
+    "Description:BookStore.ExcelData.MaxAllowedRows": "Maximum number of data rows read from the uploaded Excel sheet.",
+    "DisplayName:BookStore.ExcelData.MaxAllowedSharedStrings": "Excel max shared strings",
+    "Description:BookStore.ExcelData.MaxAllowedSharedStrings": "Maximum number of shared strings allowed while parsing Excel.",
+    "DisplayName:BookStore.ExcelData.MaxChartItems": "Dashboard max chart items",
+    "Description:BookStore.ExcelData.MaxChartItems": "Maximum number of grouped items returned for dashboard chart."
   }
 }
+
+
+

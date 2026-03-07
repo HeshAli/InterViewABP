@@ -1,47 +1,56 @@
-﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
-using Test1.BookStore.Books;
+using Test1.BookStore.Settings;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.Domain.Repositories;
+using Volo.Abp.SettingManagement;
 
 namespace Test1.BookStore;
 
-public class BookStoreDataSeederContributor
-    : IDataSeedContributor, ITransientDependency
+public class BookStoreDataSeederContributor : IDataSeedContributor, ITransientDependency
 {
-    private readonly IRepository<Book, Guid> _bookRepository;
+    private readonly ISettingManager _settingManager;
 
-    public BookStoreDataSeederContributor(IRepository<Book, Guid> bookRepository)
-    {
-        _bookRepository = bookRepository;
-    }
+    public BookStoreDataSeederContributor(ISettingManager settingManager)
+        => _settingManager = settingManager;
 
     public async Task SeedAsync(DataSeedContext context)
     {
-        if (await _bookRepository.GetCountAsync() <= 0)
-        {
-            await _bookRepository.InsertAsync(
-                new Book
-                {
-                    Name = "1984",
-                    Type = BookType.Dystopia,
-                    PublishDate = new DateTime(1949, 6, 8),
-                    Price = 19.84f
-                },
-                autoSave: true
-            );
+        // Keep business: seed global defaults if missing
+        await SeedExcelDataSettingsAsync();
+    }
 
-            await _bookRepository.InsertAsync(
-                new Book
-                {
-                    Name = "The Hitchhiker's Guide to the Galaxy",
-                    Type = BookType.ScienceFiction,
-                    PublishDate = new DateTime(1995, 9, 27),
-                    Price = 42.0f
-                },
-                autoSave: true
-            );
+    private async Task SeedExcelDataSettingsAsync()
+    {
+        var seeds = new (string Name, string Value)[]
+        {
+            (BookStoreSettings.ExcelData.MaxUploadBytes,
+                BookStoreSettings.ExcelData.DefaultMaxUploadBytes.ToString(CultureInfo.InvariantCulture)),
+
+            (BookStoreSettings.ExcelData.MaxAllowedRows,
+                BookStoreSettings.ExcelData.DefaultMaxAllowedRows.ToString(CultureInfo.InvariantCulture)),
+
+            (BookStoreSettings.ExcelData.MaxAllowedSharedStrings,
+                BookStoreSettings.ExcelData.DefaultMaxAllowedSharedStrings.ToString(CultureInfo.InvariantCulture)),
+
+            (BookStoreSettings.ExcelData.MaxChartItems,
+                BookStoreSettings.ExcelData.DefaultMaxChartItems.ToString(CultureInfo.InvariantCulture))
+        };
+
+        foreach (var (name, value) in seeds)
+        {
+            await SeedGlobalSettingIfMissingAsync(name, value);
         }
+    }
+
+    private async Task SeedGlobalSettingIfMissingAsync(string name, string value)
+    {
+        var currentValue = await _settingManager.GetOrNullGlobalAsync(name);
+
+        // if it exists (even whitespace trimmed), skip
+        if (!string.IsNullOrWhiteSpace(currentValue?.Trim()))
+            return;
+
+        await _settingManager.SetGlobalAsync(name, value);
     }
 }

@@ -1,7 +1,6 @@
 using Test1.BookStore.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
-using Volo.Abp.MultiTenancy;
 
 namespace Test1.BookStore.Permissions;
 
@@ -9,14 +8,10 @@ public class BookStorePermissionDefinitionProvider : PermissionDefinitionProvide
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(BookStorePermissions.GroupName);
+        context.AddGroup(BookStorePermissions.GroupName);
 
-        var booksPermission = myGroup.AddPermission(BookStorePermissions.Books.Default, L("Permission:Books"));
-        booksPermission.AddChild(BookStorePermissions.Books.Create, L("Permission:Books.Create"));
-        booksPermission.AddChild(BookStorePermissions.Books.Edit, L("Permission:Books.Edit"));
-        booksPermission.AddChild(BookStorePermissions.Books.Delete, L("Permission:Books.Delete"));
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(BookStorePermissions.MyPermission1, L("Permission:MyPermission1"));
+        // Define your own permissions here. Example:
+        // myGroup.AddPermission(BookStorePermissions.MyPermission1, L("Permission:MyPermission1"));
     }
 
     private static LocalizableString L(string name)

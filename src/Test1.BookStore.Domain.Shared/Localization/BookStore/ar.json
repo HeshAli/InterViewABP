@@ -37,6 +37,27 @@
     "Unspecified": "نظام",
     "SeeAllUsers": "رؤية كافة المستخدمين",
     "TakePhoto": "تصوير",
-    "ChoosePhoto": "اختر صورة"
+    "ChoosePhoto": "اختر صورة",
+    "ExcelUpload:FileIsRequired": "يرجى اختيار ملف للرفع.",
+    "ExcelUpload:OnlyXlsxAllowed": "يسمح فقط بملفات .xlsx.",
+    "ExcelUpload:FileTooLarge": "الملف المرفوع كبير جدًا. الحد الأقصى المسموح 10 ميجابايت.",
+    "ExcelUpload:FileIsEmpty": "الملف المرفوع فارغ.",
+    "ExcelUpload:NoDataRowsFound": "لم يتم العثور على صفوف بيانات في الملف المرفوع.",
+    "ExcelUpload:InvalidExcelFile": "الملف المرفوع ليس ملف Excel (.xlsx) صالحًا.",
+    "ExcelUpload:WorkbookStructureInvalid": "بنية ملف المصنف غير صالحة.",
+    "ExcelUpload:WorkbookRelationshipsMissing": "علاقات المصنف مفقودة.",
+    "ExcelUpload:SharedStringsTooLarge": "ملف Excel كبير جدًا ولا يمكن معالجته.",
+    "DisplayName:BookStore.ExcelData.MaxUploadBytes": "الحد الأقصى لحجم ملف رفع Excel (بالبايت)",
+    "Description:BookStore.ExcelData.MaxUploadBytes": "أقصى حجم مسموح لملف Excel المرفوع بالبايت.",
+    "DisplayName:BookStore.ExcelData.MaxAllowedRows": "الحد الأقصى لصفوف Excel",
+    "Description:BookStore.ExcelData.MaxAllowedRows": "أقصى عدد صفوف بيانات يتم قراءتها من ملف Excel المرفوع.",
+    "DisplayName:BookStore.ExcelData.MaxAllowedSharedStrings": "الحد الأقصى للنصوص المشتركة في Excel",
+    "Description:BookStore.ExcelData.MaxAllowedSharedStrings": "أقصى عدد نصوص مشتركة مسموح به أثناء تحليل ملف Excel.",
+    "DisplayName:BookStore.ExcelData.MaxChartItems": "الحد الأقصى لعناصر مخطط لوحة التحكم",
+    "Description:BookStore.ExcelData.MaxChartItems": "أقصى عدد عناصر مجمعة يتم إرجاعها لمخطط لوحة التحكم."
   }
 }
+
+
+
+
