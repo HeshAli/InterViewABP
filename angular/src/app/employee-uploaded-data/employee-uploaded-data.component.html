@@ -4,16 +4,30 @@
   </div>
 
   <div class="card-body">
-    <div class="d-flex justify-content-end align-items-center mb-3">
-      <label class="me-2 mb-0" for="employee-uploaded-page-size">{{ '::RowsPerPage' | abpLocalization }}</label>
-      <select
-        id="employee-uploaded-page-size"
-        class="form-select form-select-sm w-auto"
-        [value]="list.maxResultCount"
-        (change)="onPageSizeChange($event)"
-      >
-        <option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">{{ pageSize }}</option>
-      </select>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+      <div>
+        <label class="form-label mb-1" for="employee-uploaded-filter">{{ '::EmployeeUploadedDataSearchLabel' | abpLocalization }}</label>
+        <input
+          id="employee-uploaded-filter"
+          type="text"
+          class="form-control form-control-sm"
+          [value]="filter"
+          [placeholder]="'::EmployeeUploadedDataSearchPlaceholder' | abpLocalization"
+          (input)="onFilterInput($event)"
+        />
+      </div>
+
+      <div class="d-flex align-items-center">
+        <label class="me-2 mb-0" for="employee-uploaded-page-size">{{ '::RowsPerPage' | abpLocalization }}</label>
+        <select
+          id="employee-uploaded-page-size"
+          class="form-select form-select-sm w-auto"
+          [value]="list.maxResultCount"
+          (change)="onPageSizeChange($event)"
+        >
+          <option *ngFor="let pageSize of pageSizeOptions" [value]="pageSize">{{ pageSize }}</option>
+        </select>
+      </div>
     </div>
 
     <ngx-datatable [rows]="rows.items" [count]="rows.totalCount" [list]="list" default>

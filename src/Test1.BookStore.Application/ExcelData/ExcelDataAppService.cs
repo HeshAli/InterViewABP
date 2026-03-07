@@ -144,6 +144,28 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         var queryable = await _rowRepository.GetQueryableAsync();
         queryable = queryable.Where(x => x.UploadedByUserId == userId);
 
+        var filter = input.Filter?.Trim();
+        if (!filter.IsNullOrWhiteSpace())
+        {
+            if (filter.Length > 256)
+            {
+                filter = filter[..256];
+            }
+
+            var hasNumericFilter = decimal.TryParse(
+                filter,
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out var numericFilter
+            );
+
+            queryable = queryable.Where(x =>
+                x.ColumnA.Contains(filter)
+                || x.ColumnB.Contains(filter)
+                || x.ColumnC.Contains(filter)
+                || (hasNumericFilter && x.NumericValue == numericFilter));
+        }
+
         var totalCount = await AsyncExecuter.CountAsync(queryable);
 
         var sorting = NormalizeSorting(input.Sorting);
@@ -558,6 +580,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
 
     private sealed record ParsedExcelRow(string ColumnA, string ColumnB, string ColumnC, decimal NumericValue);
 }
+
 
 
 

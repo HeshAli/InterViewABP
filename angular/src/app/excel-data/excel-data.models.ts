@@ -19,9 +19,10 @@ export interface ExcelChartItemDto {
   label: string;
   value: number;
 }
+
 export interface ExcelRowsQueryDto {
   sorting?: string;
   skipCount: number;
   maxResultCount: number;
+  filter?: string;
 }
-

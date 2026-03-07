@@ -82,6 +82,8 @@
     "Permission:DataUpload": "Data Upload",
     "Permission:DataUpload.DataUploading": "Data Uploading",
     "Permission:DataUpload.UploadedData": "Uploaded Data",
-    "Permission:Dashboard": "Dashboard"
+    "Permission:Dashboard": "Dashboard",
+    "EmployeeUploadedDataSearchLabel": "Search",
+    "EmployeeUploadedDataSearchPlaceholder": "Search by Column A, Column B, or Column C"
   }
 }

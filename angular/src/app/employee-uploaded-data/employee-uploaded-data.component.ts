@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   ListService,
   LocalizationPipe,
@@ -25,12 +25,15 @@ import { ExcelDataService } from '../excel-data/excel-data.service';
   providers: [ListService],
   templateUrl: './employee-uploaded-data.component.html',
 })
-export class EmployeeUploadedDataComponent implements OnInit {
+export class EmployeeUploadedDataComponent implements OnInit, OnDestroy {
   private readonly excelDataService = inject(ExcelDataService);
   readonly list = inject(ListService);
   readonly pageSizeOptions = [3, 5, 10, 20];
 
   rows = { items: [], totalCount: 0 } as PagedResultDto<ExcelDataRowDto>;
+  filter = '';
+
+  private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit(): void {
     this.list.maxResultCount = 3;
@@ -40,6 +43,7 @@ export class EmployeeUploadedDataComponent implements OnInit {
         sorting: query.sorting,
         skipCount: query.skipCount ?? 0,
         maxResultCount: query.maxResultCount ?? this.list.maxResultCount,
+        filter: this.filter?.trim() || undefined,
       };
 
       return this.excelDataService.getMyRows(request);
@@ -48,6 +52,13 @@ export class EmployeeUploadedDataComponent implements OnInit {
     this.list.hookToQuery(rowsStreamCreator).subscribe(response => {
       this.rows = response;
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchDebounceHandle) {
+      clearTimeout(this.searchDebounceHandle);
+      this.searchDebounceHandle = null;
+    }
   }
 
   onPageSizeChange(event: Event): void {
@@ -63,5 +74,19 @@ export class EmployeeUploadedDataComponent implements OnInit {
 
     this.list.page = 0;
     this.list.maxResultCount = pageSize;
+  }
+
+  onFilterInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.filter = target?.value ?? '';
+
+    if (this.searchDebounceHandle) {
+      clearTimeout(this.searchDebounceHandle);
+    }
+
+    this.searchDebounceHandle = setTimeout(() => {
+      this.list.page = 0;
+      this.list.get();
+    }, 300);
   }
 }

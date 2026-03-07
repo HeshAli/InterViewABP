@@ -34,6 +34,7 @@ export class ExcelDataService {
           sorting: input.sorting,
           skipCount: input.skipCount,
           maxResultCount: input.maxResultCount,
+          filter: input.filter,
         },
       },
       { apiName: this.apiName }
@@ -48,4 +49,5 @@ export class ExcelDataService {
       { apiName: this.apiName }
     );
 }
+
 

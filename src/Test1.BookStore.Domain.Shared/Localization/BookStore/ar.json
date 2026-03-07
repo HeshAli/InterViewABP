@@ -81,6 +81,8 @@
     "Permission:BookStore": "متجر الكتب",
     "Permission:DataUpload": "رفع البيانات",
     "Permission:DataUpload.DataUploading": "رفع البيانات",
-    "Permission:DataUpload.UploadedData": "البيانات المرفوعة"
+    "Permission:DataUpload.UploadedData": "البيانات المرفوعة",
+    "EmployeeUploadedDataSearchLabel": "بحث",
+    "EmployeeUploadedDataSearchPlaceholder": "ابحث باستخدام العمود A أو العمود B أو العمود C"
   }
 }
