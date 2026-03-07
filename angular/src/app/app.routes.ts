@@ -12,6 +12,7 @@ export const APP_ROUTES: Routes = [
     path: '',
     pathMatch: 'full',
     loadComponent: () => import('./home/home.component').then(c => c.HomeComponent),
+    canActivate: [authGuard],
   },
   {
     path: 'account',
@@ -20,14 +21,17 @@ export const APP_ROUTES: Routes = [
   {
     path: 'identity',
     loadChildren: () => import('@abp/ng.identity').then(c => c.createRoutes()),
+    canActivate: [authGuard],
   },
   {
     path: 'tenant-management',
     loadChildren: () => import('@abp/ng.tenant-management').then(c => c.createRoutes()),
+    canActivate: [authGuard],
   },
   {
     path: 'setting-management',
     loadChildren: () => import('@abp/ng.setting-management').then(c => c.createRoutes()),
+    canActivate: [authGuard],
   },
   {
     path: 'data-upload',
