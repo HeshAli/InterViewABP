@@ -11,18 +11,20 @@
             "#AbpTenantSwitchLink",
             "[id*='TenantSwitch']",
             ".tenant-switch-box",
-            ".abp-tenant-switch"
+            ".abp-tenant-switch",
+            "[data-tenant-switch]"
         ];
 
-        var containers = [];
+        var nodes = [];
+
         selectors.forEach(function (selector) {
             document.querySelectorAll(selector).forEach(function (el) {
-                var container = el.closest(".mb-3, .form-group, .form-floating, .input-group, .tenant-switch-box");
-                containers.push(container || el);
+                var tenantContainer = el.closest("[data-tenant-switch], .tenant-switch-box, .abp-tenant-switch");
+                nodes.push(tenantContainer || el);
             });
         });
 
-        containers.forEach(function (node) {
+        nodes.forEach(function (node) {
             if (node && node.parentNode) {
                 node.parentNode.removeChild(node);
             }
@@ -64,19 +66,13 @@
     function init() {
         applyLoginCustomizations();
 
-        if (!isLoginPage() || !document.body) {
+        if (!isLoginPage()) {
             return;
         }
 
-        var observer = new MutationObserver(function () {
-            applyLoginCustomizations();
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        setTimeout(function () {
-            observer.disconnect();
-        }, 5000);
+        // Run once more shortly after first paint to catch late-rendered tenant UI,
+        // without continuously mutating the login DOM.
+        setTimeout(applyLoginCustomizations, 250);
     }
 
     if (document.readyState === "loading") {

@@ -28,6 +28,26 @@ dotnet run --project src/Upload.Data.HttpApi.Host/Upload.Data.HttpApi.Host.cspro
 
 Default URL is shown in console (commonly `https://localhost:44395`).
 
+## 4.1) Configure Microsoft Social Login (optional)
+Update these keys in:
+- `src/Upload.Data.HttpApi.Host/appsettings.json`
+- `src/Upload.Data.HttpApi.Host/appsettings.Development.json`
+
+```json
+"Authentication": {
+  "Microsoft": {
+    "Authority": "organizations",
+    "TenantId": "organizations",
+    "ClientId": "<your-azure-app-client-id>",
+    "ClientSecret": "<your-azure-app-client-secret>"
+  }
+}
+```
+
+Notes:
+- If you keep placeholder values (`SET_MICROSOFT_CLIENT_ID` / `SET_MICROSOFT_CLIENT_SECRET`), the **Microsoft** button is shown on login page but sign-in will fail until real values are set.
+- Callback URL to configure in Azure App Registration: `https://localhost:44316/signin-microsoft`.
+
 ## 5) Run Angular UI
 From `angular` folder:
 
@@ -63,3 +83,12 @@ node .\node_modules\@angular\cli\bin\ng serve
   - `AppExcelImportBatches`
   - `AppExcelDataRows`
 - Dashboard data is filtered by current authenticated user only.
+
+
+
+Microsoft tenant note:
+- ABP database TenantId = null means host context; it is unrelated to Azure Entra tenant id.
+- For host context, set `Authentication:Microsoft:Authority` to one of: `common`, `organizations`, `consumers`, or your Entra tenant GUID.
+- If you use `common`/`consumers`, Azure App Registration must support personal Microsoft accounts.
+
+

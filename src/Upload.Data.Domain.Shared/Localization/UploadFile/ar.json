@@ -76,6 +76,7 @@
     "Chart:TotalNumericValueByColumnA": "إجمالي القيمة الرقمية حسب العمود A",
     "EmptyValue": "(فارغ)",
     "UploadFailed": "فشل الرفع.",
+    "Login:InvalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة.",
     "Menu:EmployeeUploadedData": "نتائج الرفع",
     "EmployeeUploadedDataTitle": "نتائج الرفع",
     "Permission:UploadFile": "متجر الكتب",

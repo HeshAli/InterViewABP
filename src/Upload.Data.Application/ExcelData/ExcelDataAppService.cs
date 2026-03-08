@@ -27,7 +27,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
 {
     private readonly IRepository<ExcelImportBatch, Guid> _batchRepository;
     private readonly IRepository<ExcelDataRow, Guid> _rowRepository;
-    private readonly ISettingProvider _settingProvider;
+    private readonly ISettingProvider _settingProvider; 
 
     public ExcelDataAppService(
         IRepository<ExcelImportBatch, Guid> batchRepository,
@@ -564,6 +564,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
 
     private sealed record ParsedExcelRow(string ColumnA, string ColumnB, string ColumnC, decimal NumericValue);
 }
+
 
 
 
