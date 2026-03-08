@@ -1,7 +1,7 @@
 {
   "culture": "ar",
   "texts": {
-    "AppName": "Upload.Data",
+    "AppName": "Upload Data",
     "Menu:Home": "منزل، بيت",
     "Menu:ContactUs": "اتصل بنا",
     "Menu:ArticleSample": "عينة المادة",
@@ -87,3 +87,4 @@
     "EmployeeUploadedDataSearchPlaceholder": "ابحث باستخدام العمود A أو العمود B أو العمود C"
   }
 }
+

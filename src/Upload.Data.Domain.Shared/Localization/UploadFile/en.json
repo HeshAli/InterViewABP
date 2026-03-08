@@ -1,7 +1,7 @@
 {
   "Culture": "en",
   "Texts": {
-    "AppName": "Upload.Data",
+    "AppName": "Upload Data",
     "Menu:UploadFile": "Book Store",
     "Menu:Books": "Books",
     "Actions": "Actions",
@@ -88,3 +88,4 @@
     "EmployeeUploadedDataSearchPlaceholder": "Search by Column A, Column B, or Column C"
   }
 }
+
