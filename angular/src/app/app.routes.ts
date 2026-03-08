@@ -7,6 +7,19 @@ const policies = {
   dashboard: 'UploadFile.Dashboard',
 };
 
+const loadAccountRoutes = () =>
+  import('@abp/ng.account').then(accountModule => {
+    const routes = accountModule.createRoutes();
+    const rootRoute = routes.find(route => Array.isArray(route.children));
+    const loginRoute = rootRoute?.children?.find(route => route.path === 'login');
+
+    if (loginRoute) {
+      loginRoute.data = { ...(loginRoute.data ?? {}), tenantBoxVisible: false };
+    }
+
+    return routes;
+  });
+
 export const APP_ROUTES: Routes = [
   {
     path: '',
@@ -16,7 +29,7 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'account',
-    loadChildren: () => import('@abp/ng.account').then(c => c.createRoutes()),
+    loadChildren: loadAccountRoutes,
   },
   {
     path: 'identity',

@@ -42,6 +42,11 @@ public class Program
             await builder.AddApplicationAsync<UploadFileHttpApiHostModule>();
             var app = builder.Build();
             await app.InitializeApplicationAsync();
+            app.MapGet("/", context =>
+            {
+                context.Response.Redirect("/swagger", permanent: false);
+                return Task.CompletedTask;
+            });
             await app.RunAsync();
             return 0;
         }

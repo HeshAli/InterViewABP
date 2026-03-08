@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Upload.Data.Settings;
@@ -9,6 +10,9 @@ namespace Upload.Data;
 
 public class UploadFileDataSeederContributor : IDataSeedContributor, ITransientDependency
 {
+    private const string SelfRegistrationSettingName = "Abp.Account.IsSelfRegistrationEnabled";
+    private const string DisabledSelfRegistrationValue = "false";
+
     private readonly ISettingManager _settingManager;
 
     public UploadFileDataSeederContributor(ISettingManager settingManager)
@@ -18,6 +22,9 @@ public class UploadFileDataSeederContributor : IDataSeedContributor, ITransientD
     {
         // Keep business: seed global defaults if missing
         await SeedExcelDataSettingsAsync();
+
+        // Disable account self-registration so the Register link is hidden on login screens.
+        await DisableSelfRegistrationAsync();
     }
 
     private async Task SeedExcelDataSettingsAsync()
@@ -41,6 +48,17 @@ public class UploadFileDataSeederContributor : IDataSeedContributor, ITransientD
         {
             await SeedGlobalSettingIfMissingAsync(name, value);
         }
+    }
+
+    private async Task DisableSelfRegistrationAsync()
+    {
+        var currentValue = await _settingManager.GetOrNullGlobalAsync(SelfRegistrationSettingName);
+        if (string.Equals(currentValue?.Trim(), DisabledSelfRegistrationValue, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        await _settingManager.SetGlobalAsync(SelfRegistrationSettingName, DisabledSelfRegistrationValue);
     }
 
     private async Task SeedGlobalSettingIfMissingAsync(string name, string value)
