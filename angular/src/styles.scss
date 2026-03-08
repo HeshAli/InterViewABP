@@ -38,3 +38,13 @@
     background-image: url('assets/images/getting-started/x.svg');
   }
 }
+
+body.my-dashboard-fullscreen #lpx-wrapper.fixed .lpx-content,
+body.my-dashboard-fullscreen #lpx-wrapper.full .lpx-content {
+  max-width: 100% !important;
+}
+
+body.my-dashboard-fullscreen .lpx-content-container .lpx-content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { LocalizationPipe, LocalizationService } from '@abp/ng.core';
 import Chart from 'chart.js/auto';
@@ -10,10 +10,12 @@ import { ExcelDataService } from '../excel-data/excel-data.service';
   standalone: true,
   imports: [CommonModule, LocalizationPipe],
   templateUrl: './my-dashboard.component.html',
+  styleUrl: './my-dashboard.component.scss',
 })
 export class MyDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly excelDataService = inject(ExcelDataService);
   private readonly localizationService = inject(LocalizationService);
+  private readonly document = inject(DOCUMENT);
 
   @ViewChild('chartCanvas') chartCanvas?: ElementRef<HTMLCanvasElement>;
 
@@ -22,6 +24,7 @@ export class MyDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private chart: Chart | null = null;
 
   ngOnInit(): void {
+    this.document.body.classList.add('my-dashboard-fullscreen');
     this.loadChart();
   }
 
@@ -30,6 +33,7 @@ export class MyDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.document.body.classList.remove('my-dashboard-fullscreen');
     this.destroyChart();
   }
 

@@ -28,7 +28,7 @@ import { ExcelDataService } from '../excel-data/excel-data.service';
 export class EmployeeUploadedDataComponent implements OnInit, OnDestroy {
   private readonly excelDataService = inject(ExcelDataService);
   readonly list = inject(ListService);
-  readonly pageSizeOptions = [3, 5, 10, 20];
+  readonly pageSizeOptions = [5, 10, 20];
 
   rows = { items: [], totalCount: 0 } as PagedResultDto<ExcelDataRowDto>;
   filter = '';
@@ -36,7 +36,7 @@ export class EmployeeUploadedDataComponent implements OnInit, OnDestroy {
   private searchDebounceHandle: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit(): void {
-    this.list.maxResultCount = 3;
+    this.list.maxResultCount = 5;
 
     const rowsStreamCreator = (query: PagedAndSortedResultRequestDto) => {
       const request: ExcelRowsQueryDto = {

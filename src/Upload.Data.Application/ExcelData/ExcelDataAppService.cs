@@ -147,10 +147,7 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         var filter = input.Filter?.Trim();
         if (!filter.IsNullOrWhiteSpace())
         {
-            if (filter.Length > 256)
-            {
-                filter = filter[..256];
-            }
+            
 
             var hasNumericFilter = decimal.TryParse(
                 filter,
@@ -171,22 +168,10 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
         var sorting = NormalizeSorting(input.Sorting);
 
         var entities = await AsyncExecuter.ToListAsync(
-            queryable
-                .OrderBy(sorting)
-                .Skip(skipCount)
-                .Take(maxResultCount)
+            queryable.OrderBy(sorting).PageBy(skipCount, maxResultCount)
         );
 
-        var items = entities.Select(entity => new ExcelDataRowDto
-        {
-            Id = entity.Id,
-            BatchId = entity.BatchId,
-            ColumnA = entity.ColumnA,
-            ColumnB = entity.ColumnB,
-            ColumnC = entity.ColumnC,
-            NumericValue = entity.NumericValue,
-            CreationTime = entity.CreationTime
-        }).ToList();
+        var items = ObjectMapper.Map<List<ExcelDataRow>, List<ExcelDataRowDto>>(entities);
 
         return new PagedResultDto<ExcelDataRowDto>(totalCount, items);
     }
@@ -194,14 +179,13 @@ public class ExcelDataAppService : ApplicationService, IExcelDataAppService
     [Authorize(UploadFilePermissions.Dashboard.Default)]
     public async Task<List<ExcelChartItemDto>> GetMyChartAsync(CancellationToken cancellationToken = default)
     {
-        var userId = CurrentUser.Id ?? throw new AbpAuthorizationException("User is not authenticated.");
+       
 
         var queryable = await _rowRepository.GetQueryableAsync();
         var limits = await GetExcelLimitsAsync();
 
         var result = await AsyncExecuter.ToListAsync(
             queryable
-                .Where(x => x.UploadedByUserId == userId)
                 .GroupBy(x => x.ColumnA)
                 .Select(g => new ExcelChartItemDto
                 {

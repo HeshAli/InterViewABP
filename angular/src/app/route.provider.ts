@@ -17,18 +17,11 @@ function configureRoutes() {
   const routes = inject(RoutesService);
   routes.add([
     {
-      path: '/',
-      name: '::Menu:Home',
-      iconClass: 'fas fa-home',
-      order: 1,
-      layout: eLayoutType.application,
-    },
-    {
       path: undefined,
       name: '::Menu:DataUploadSection',
       iconClass: 'fas fa-file-upload',
       layout: eLayoutType.application,
-      order: 2,
+      order: 1,
     },
     {
       path: '/data-upload',

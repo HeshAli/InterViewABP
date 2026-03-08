@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.dashboard-page {
+  min-height: calc(100vh - 150px);
+}
+
+.dashboard-card {
+  height: 100%;
+}
+
+.dashboard-chart-body {
+  min-height: calc(100vh - 230px);
+}
+
+@media (max-width: 767.98px) {
+  .dashboard-page {
+    min-height: calc(100vh - 130px);
+  }
+
+  .dashboard-chart-body {
+    min-height: calc(100vh - 210px);
+  }
+}

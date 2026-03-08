@@ -1,10 +1,22 @@
-import { authGuard, permissionGuard } from '@abp/ng.core';
-import { Routes } from '@angular/router';
+import { PermissionService, authGuard, permissionGuard } from '@abp/ng.core';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router, Routes } from '@angular/router';
 
 const policies = {
   dataUploading: 'UploadFile.DataUpload.DataUploading',
   uploadedData: 'UploadFile.DataUpload.UploadedData',
   dashboard: 'UploadFile.Dashboard',
+};
+
+const landingRedirectGuard: CanActivateFn = () => {
+  const permissionService = inject(PermissionService);
+  const router = inject(Router);
+
+  if (permissionService.getGrantedPolicy(policies.dashboard)) {
+    return router.parseUrl('/data-upload/transferred-rows');
+  }
+
+  return router.parseUrl('/data-upload/employee-uploaded-data');
 };
 
 const loadAccountRoutes = () =>
@@ -25,7 +37,7 @@ export const APP_ROUTES: Routes = [
     path: '',
     pathMatch: 'full',
     loadComponent: () => import('./home/home.component').then(c => c.HomeComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, landingRedirectGuard],
   },
   {
     path: 'account',

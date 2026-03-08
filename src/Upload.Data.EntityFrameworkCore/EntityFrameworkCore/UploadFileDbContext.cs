@@ -87,6 +87,7 @@ public class UploadFileDbContext :
         {
             b.ToTable(UploadFileConsts.DbTablePrefix + "ExcelImportBatches", UploadFileConsts.DbSchema);
             b.ConfigureByConvention();
+            b.Ignore(x => x.ExtraProperties);
 
             b.Property(x => x.FileName)
                 .IsRequired()
@@ -124,5 +125,4 @@ public class UploadFileDbContext :
         //});
     }
 }
-
 
